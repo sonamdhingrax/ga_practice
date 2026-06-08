@@ -30,7 +30,6 @@ jobs:
         run: echo 'version=["1.24", "1.25"]' >> "$GITHUB_OUTPUT"
   lint:
     runs-on: ubuntu-latest
-    if: ${{ inputs.debug == 'true' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -42,6 +41,7 @@ jobs:
       - name: Lint
         run: go vet ./...
       - run: echo "Debug mode on, requested Go ${{ inputs.go-version }}."
+        if: ${{ inputs.debug }}
   test:
     needs: setup
     strategy:
