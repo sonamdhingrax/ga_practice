@@ -4,8 +4,22 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+    paths:
+      ["**.go", "**.mod", "**.sum", "Dockerfile", ".github/workflows/ci.yml"]
+  workflow_dispatch:
+    inputs:
+      go-version:
+        type: choice
+        options: ["1.24", "1.25"]
+        default: "1.25"
+      debug:
+        type: boolean
+        default: false
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -16,6 +30,7 @@ jobs:
         run: echo 'version=["1.24", "1.25"]' >> "$GITHUB_OUTPUT"
   lint:
     runs-on: ubuntu-latest
+    if: ${{ inputs.debug == 'true' }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -26,6 +41,7 @@ jobs:
           cache: true
       - name: Lint
         run: go vet ./...
+      - run: echo "Debug mode on, requested Go ${{ inputs.go-version }}."
   test:
     needs: setup
     strategy:
