@@ -1,0 +1,8 @@
+# Keep the build context tiny and avoid leaking local cruft into images.
+.git
+.github
+*.md
+Dockerfile
+.dockerignore
+.gitignore
+docs/
