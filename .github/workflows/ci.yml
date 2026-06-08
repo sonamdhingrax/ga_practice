@@ -10,7 +10,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      go-versions: ${{ steps.gen.outputs.versions}}
+      go-versions: ${{ steps.gen.outputs.version}}
     steps:
       - id: gen
         run: echo 'version=["1.24", "1.25"]' >> "$GITHUB_OUTPUT"
@@ -30,7 +30,7 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        go-version: ${{ fromJson(needs.setup.outputs.go-versions) }}
+        go-version: ${{ fromJSON(needs.setup.outputs.go-versions) }}
         os: [ubuntu-latest, macos-latest]
         exclude:
           - go-version: "1.24"
@@ -51,6 +51,7 @@ jobs:
           go-version: ${{ matrix.go-version }}
           cache: true
       - run: go test -race -cover ./...
+        if: ${{ matrix.coverage != 'true' }}
       - name: Create coverage report
         if: ${{ matrix.coverage == 'true' }}
         run: go test -race -cover -coverprofile=coverage.out ./...
@@ -71,6 +72,6 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/go-build
-          key: ${{ runner.os }}-gobuild-${{ matrix.go }}-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-gobuild-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            ${{ runner.os }}-gobuild-${{ matrix.go }}-
+            ${{ runner.os }}-gobuild-${{ matrix.go-version }}-
