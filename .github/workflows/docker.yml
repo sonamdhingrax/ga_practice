@@ -26,15 +26,18 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare build vars
+        id: vars
+        run: echo "date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=sha,format=long          # ghcr.io/.../ga_practice:sha-<40char>
-            type=ref,event=branch         # :main, :day1-...
-            type=raw,value=latest,enable={{is_default_branch}}   # :latest only on main
+            type=sha,format=long
+            type=ref,event=branch
+            type=raw,value=latest,enable={{is_default_branch}}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -47,4 +50,4 @@ jobs:
           build-args: |
             VERSION=${{ steps.meta.outputs.version }}
             COMMIT=${{ github.sha}}
-            DATE="echo $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            DATE=${{ steps.vars.outputs.date}}
