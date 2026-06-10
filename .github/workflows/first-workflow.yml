@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-slim
     steps:
       - name: Check GitHub Context
-        run: echo 'GitHub Context: ${{ toJSON(github) }}'
+        run: echo "${{ toJSON(github) }}"
       - name: Print GitHub Context
         run: echo "${{github}}"
