@@ -1,0 +1,12 @@
+name: First Workflow
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  first-job:
+    runs-on: ubuntu-slim
+    steps:
+      - name: Check GitHub Context
+        run: echo "GitHub Context: ${{ toJson(github) }}"
+      - name: Print GitHub Context
+        run: echo "${{github}}"
